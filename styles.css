@@ -1,0 +1,230 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+    height: 100vh;
+}
+
+.presentation-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.slide {
+    display: none;
+    padding: 40px;
+    height: calc(100vh - 100px);
+    background: white;
+    margin: 20px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    position: relative;
+}
+
+.slide.active {
+    display: block;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.slide h1 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-align: center;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 15px;
+}
+
+.slide h2 {
+    color: #34495e;
+    font-size: 2em;
+    margin: 25px 0 15px 0;
+    border-left: 5px solid #3498db;
+    padding-left: 15px;
+}
+
+.slide h3 {
+    color: #2c3e50;
+    font-size: 1.4em;
+    margin: 20px 0 10px 0;
+}
+
+.slide p, .slide li {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    color: #34495e;
+}
+
+.slide ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.slide li {
+    margin-bottom: 8px;
+}
+
+.code-block {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    margin: 15px 0;
+    overflow-x: auto;
+    border-left: 5px solid #3498db;
+    line-height: 1.6;
+    white-space: pre;
+    tab-size: 4;
+}
+
+.code-block code {
+    display: block;
+}
+
+/* SQLキーワードのハイライト */
+.code-block .keyword {
+    color: #ff79c6;
+    font-weight: bold;
+}
+
+.code-block .comment {
+    color: #6272a4;
+    font-style: italic;
+}
+
+.table-demo {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 1em;
+}
+
+.table-demo th, .table-demo td {
+    border: 2px solid #3498db;
+    padding: 12px;
+    text-align: center;
+}
+
+.table-demo th {
+    background: #3498db;
+    color: white;
+    font-weight: bold;
+}
+
+.table-demo tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.highlight {
+    background: #f1c40f;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.warning {
+    background: #e74c3c;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.info {
+    background: #3498db;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.success {
+    background: #27ae60;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.navigation {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.nav-btn {
+    padding: 12px 24px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.nav-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.nav-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.slide-counter {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: #34495e;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.goals {
+    background: linear-gradient(135deg, #74b9ff, #0984e3);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.goals h3 {
+    color: white;
+    margin-bottom: 15px;
+} 
