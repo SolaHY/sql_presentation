@@ -1,0 +1,336 @@
+<!-- スライド13: サブクエリ -->
+<div class="slide">
+    <h1>🔍 サブクエリ - クエリの中のクエリ</h1>
+    <div class="code-block">-- 平均より多くの動物がいる生息地を探す
+SELECT
+    h.name AS 生息地名,
+    COUNT(na.animal_id) AS 動物数,
+    h.climate AS 気候
+FROM
+    habitats h
+INNER JOIN native_animals na ON
+    h.habitat_id = na.habitat_id
+GROUP BY
+    h.habitat_id,
+    h.name,
+    h.climate
+HAVING
+    COUNT(na.animal_id) >(
+    SELECT
+        AVG(animal_count)
+    FROM
+        (
+        SELECT
+            COUNT(animal_id) AS animal_count
+        FROM
+            native_animals
+        GROUP BY
+            habitat_id
+    ) AS avg_counts
+)
+ORDER BY
+    動物数
+DESC
+    ;</div>
+
+    <div class="code-block">-- 特定の食性を持つ動物の生息地情報
+SELECT
+    na.name_en AS 英語名,
+    na.name_jp AS 日本語名,
+    h.name AS 生息地,
+    na.status AS 保護状態
+FROM
+    native_animals na
+INNER JOIN habitats h ON
+    na.habitat_id = h.habitat_id
+WHERE
+    na.animal_id IN(
+    SELECT
+        ad.animal_id
+    FROM
+        animal_diets ad
+    JOIN diet_types dt ON
+        ad.diet_id = dt.diet_id
+    WHERE
+        dt.type = '肉食性'
+)
+ORDER BY
+    na.name_en;</div>
+
+    <div class="info">
+        <strong>サブクエリの活用場面</strong><br>
+        • 平均値や最大値との比較<br>
+        • 相関のあるデータの抽出<br>
+        • 複雑な条件での絞り込み<br>
+        • IN句での複数条件の指定
+    </div>
+</div>
+
+<!-- スライド14: データの更新 -->
+<div class="slide">
+    <h1>🔄 データの更新</h1>
+
+    <div class="info mb-4">
+        <h3 class="text-white">UPDATE文</h3>
+        <p class="text-white mb-0">動物データの更新方法を学びましょう</p>
+    </div>
+    <h2>UPDATE文の基本構文</h2>
+    <div class="code-block">UPDATE テーブル名 SET カラム名 = 値 WHERE 条件;</div>
+    <div class="code-block">-- 特定の動物の状態を更新
+UPDATE 
+    native_animals
+SET 
+    status = '絶滅危惧'
+WHERE 
+    name_jp = 'タスマニアデビル';
+
+-- 特定の生息地の動物すべての説明を更新
+UPDATE 
+    native_animals
+SET 
+    description = description || ' (要保護動物)'
+WHERE 
+    habitat_id IN (
+        SELECT habitat_id 
+        FROM habitats 
+        WHERE climate = '温帯'
+    );</div>
+</div>
+
+<!-- スライド15: 集計関数とGROUP BY -->
+<div class="slide">
+    <h1>🔍 おまけ</h1>
+    <h2>高度なクエリの組み合わせ</h2>
+    <div class="code-block">-- サブクエリを使用した例：各気候帯で最も多い食性
+WITH 動物食性集計 AS ( 
+    SELECT
+        h.climate AS 気候
+        , dt.type AS 食性
+        , COUNT(*) AS 動物数
+        , RANK() OVER (PARTITION BY h.climate ORDER BY COUNT(*) DESC) AS ランク 
+    FROM
+        habitats h 
+        JOIN native_animals na 
+            ON h.habitat_id = na.habitat_id 
+        JOIN animal_diets ad 
+            ON na.animal_id = ad.animal_id 
+        JOIN diet_types dt 
+            ON ad.diet_id = dt.diet_id 
+    GROUP BY
+        h.climate
+        , dt.type
+) 
+SELECT
+    気候
+    , 食性
+    , 動物数 
+FROM
+    動物食性集計 
+WHERE
+    ランク = 1 
+ORDER BY
+    動物数 DESC;</div>
+        
+    <div class="info mt-4">
+        <h3>🔍 WITH句を使用した高度な分析の解説</h3>
+        
+        <div class="explanation-block">
+            <h4>1. WITH句（共通テーブル式）とは</h4>
+            <ul>
+                <li>一時的な結果セットを作成し、後続のクエリで参照できる機能</li>
+                <li>複雑なクエリを分かりやすく整理できる</li>
+                <li>同じサブクエリを複数回使用する場合に便利</li>
+            </ul>
+        </div>
+
+        <div class="explanation-block">
+            <h4>2. クエリの構成要素</h4>
+            <ul>
+                <li><strong>WITH句の定義</strong>
+                    <ul>
+                        <li>名前：動物食性集計</li>
+                        <li>目的：気候帯ごとの食性分布を集計</li>
+                    </ul>
+                </li>
+                <li><strong>ウィンドウ関数（RANK()）</strong>
+                    <ul>
+                        <li>PARTITION BY：気候でグループ化</li>
+                        <li>ORDER BY COUNT(*)：動物数で順位付け</li>
+                    </ul>
+                </li>
+                <li><strong>GROUP BY</strong>
+                    <ul>
+                        <li>気候（h.climate）と食性（dt.name）でグループ化</li>
+                        <li>各組み合わせの動物数を集計</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="explanation-block">
+            <h4>3. 結果の解釈</h4>
+            <ul>
+                <li><strong>出力カラム</strong>
+                    <ul>
+                        <li>気候：各気候帯</li>
+                        <li>食性：その気候帯で最も多い食性</li>
+                        <li>動物数：該当する動物の数</li>
+                    </ul>
+                </li>
+                <li><strong>データの並び順</strong>
+                    <ul>
+                        <li>動物数の多い順（DESC）</li>
+                        <li>各気候帯の代表的な食性が分かる</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="warning mt-4">
+            <h3>💡 使用時の注意点</h3>
+            <ul>
+                <li>WITH句は再帰的なクエリにも使用可能</li>
+                <li>パフォーマンスを考慮してインデックスを適切に設定</li>
+                <li>大量データの場合、実行計画を確認することを推奨</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- スライド15: インデックス -->
+<div class="slide">
+    <h1>📊 インデックス - パフォーマンスの要</h1>
+    
+    <h2>インデックスとは？</h2>
+    <p>データベースのパフォーマンスを向上させるための索引機能です。本の索引のように、データの検索を高速化します。</p>
+
+    <div class="two-column">
+        <div>
+            <h3>インデックスの種類</h3>
+            <ul>
+                <li><strong>主キーインデックス</strong>: 自動的に作成される</li>
+                <li><strong>単一列インデックス</strong>: 1つのカラムに対して作成</li>
+                <li><strong>複合インデックス</strong>: 複数のカラムに対して作成</li>
+                <li><strong>ユニークインデックス</strong>: 重複を許さない</li>
+            </ul>
+        </div>
+        <div>
+            <h3>インデックスが有効な場面</h3>
+            <ul>
+                <li>WHERE句での検索</li>
+                <li>JOIN操作</li>
+                <li>ORDER BY での並び替え</li>
+                <li>GROUP BY での集約</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>インデックスの作成と削除</h3>
+    <div class="code-block">-- インデックスの作成
+CREATE INDEX idx_status ON native_animals(status);
+
+-- 複合インデックスの作成
+CREATE INDEX idx_name_habitat 
+ON native_animals(name_jp, habitat_id);
+
+-- ユニークインデックスの作成
+CREATE UNIQUE INDEX idx_unique_name 
+ON native_animals(name_jp);
+
+-- インデックスの削除
+DROP INDEX idx_status;</div>
+
+    <div class="info mt-4">
+        <h3>🔍 インデックスの解説</h3>
+
+        <div class="explanation-block">
+            <h4>1. インデックスとは</h4>
+            <ul>
+                <li>データベースの検索を高速化するための仕組み</li>
+                <li>本の索引（インデックス）のように、特定の値の位置を素早く特定できる</li>
+                <li>頻繁に検索条件として使用されるカラムに作成すると効果的</li>
+            </ul>
+        </div>
+
+        <div class="explanation-block">
+            <h4>2. 構文の説明</h4>
+            <ul>
+                <li><strong>CREATE INDEX</strong>: インデックス作成の命令</li>
+                <li><strong>idx_status</strong>: インデックスの名前（慣習的に「idx_カラム名」）</li>
+                <li><strong>ON native_animals(status)</strong>: 対象テーブルとカラム</li>
+            </ul>
+        </div>
+
+        <div class="explanation-block">
+            <h4>3. 使用例</h4>
+            <pre class="syntax">-- このようなクエリが高速化される
+SELECT * FROM native_animals WHERE status = '絶滅危惧';
+SELECT COUNT(*) FROM native_animals GROUP BY status;</pre>
+        </div>
+
+        <div class="warning mt-4">
+            <h3>💡 注意点</h3>
+            <ul>
+                <li>インデックスはデータ更新時の時間がかかることがある</li>
+                <li>必要なカラムにのみ作成することが重要</li>
+                <li>大量のINSERT/UPDATEが発生するテーブルでは慎重に検討</li>
+            </ul>
+        </div>
+
+        <div class="success mt-4">
+            <h3>✨ インデックスが効果的なケース</h3>
+            <ul>
+                <li>WHERE句での検索が頻繁に行われる</li>
+                <li>結合条件（JOIN）で使用される</li>
+                <li>GROUP BY, ORDER BYで使用される</li>
+                <li>カラムの値の種類が適度に分散している</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- スライド16: トランザクション -->
+<div class="slide">
+    <h1>📋 トランザクション - データの整合性を守る</h1>
+    
+    <h2>トランザクションとは？</h2>
+    <p>複数のSQL文をまとめて実行する仕組みで、データの一貫性を保証します。全ての処理が成功するか、全て失敗するかのどちらかになります。</p>
+
+    <h3>ACID特性</h3>
+    <div class="info">
+        <ul>
+            <li><strong>Atomicity（原子性）</strong>: 全て成功するか、全て失敗するか</li>
+            <li><strong>Consistency（一貫性）</strong>: データベースの整合性を保つ</li>
+            <li><strong>Isolation（独立性）</strong>: トランザクション同士が干渉しない</li>
+            <li><strong>Durability（永続性）</strong>: 完了したトランザクションは永続的</li>
+        </ul>
+    </div>
+
+    <h3>基本的なトランザクション操作</h3>
+    <div class="code-block">-- トランザクションの開始
+START TRANSACTION;
+
+-- 動物の状態を更新
+UPDATE native_animals 
+SET status = '絶滅危惧'
+WHERE name_jp = 'コアラ';
+
+-- 説明も更新
+UPDATE native_animals 
+SET description = CONCAT(description, ' (保護状態が変更されました)')
+WHERE name_jp = 'コアラ';
+
+-- 問題なければコミット
+COMMIT;
+
+-- 問題があれば巻き戻し
+ROLLBACK;
+</div>
+
+    <div class="warning">
+        <strong>トランザクションの注意点</strong><br>
+        • トランザクションは短く保つ（長時間のロックを避ける）<br>
+        • デッドロックに注意<br>
+        • 適切な分離レベルを選択する
+    </div>
+</div> 

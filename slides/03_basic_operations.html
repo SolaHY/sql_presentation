@@ -1,0 +1,175 @@
+<!-- スライド7: SELECT文の基本 -->
+<div class="slide">
+    <h1>🔍 SELECT文 - データの取得</h1>
+
+    <div class="info mb-4">
+        <h3 class="text-white">SELECT文の基本</h3>
+        <p class="text-white mb-0">動物データの検索と抽出方法を学びましょう</p>
+    </div>
+
+    <h2>データの検索 (SELECT)</h2>
+    <h2>基本構文</h2>
+    <div class="code-block">SELECT カラム名 FROM テーブル名;</div>
+    
+    <h3>📝 基本的な使い方</h3>
+    <div class="code-block">-- 全データを取得
+SELECT * FROM native_animals;
+
+-- 特定のカラムのみ取得
+SELECT name_jp as 動物名, status as 保護状態 
+FROM native_animals;
+</div>
+
+<h3>📝 条件付き検索</h3>
+<div class="code-block">-- 特定の生息地に住む動物を検索
+
+-- 特定の生息地に住む動物を検索
+SELECT 
+    na.name_jp as 動物名, h.name as 生息地
+FROM 
+    native_animals na
+JOIN 
+    habitats h ON na.habitat_id = h.habitat_id
+WHERE 
+    h.name = 'ユーカリの森';
+
+-- 絶滅危惧種の動物を検索
+SELECT 
+    name_jp as 動物名, status as 保護状態
+FROM 
+    native_animals
+WHERE 
+    status = '絶滅危惧'
+ORDER BY 
+    name_jp;</div>
+
+    <h2>データの追加 (INSERT)</h2>
+    <div class="code-block">-- 新しい生息地を追加
+INSERT INTO habitats 
+    (habitat_id, name, climate, description)
+VALUES 
+    (9, 'マングローブ林', '熱帯', '沿岸部の熱帯雨林生態系');
+
+-- 新しい動物を追加
+INSERT INTO native_animals 
+    (animal_id, name_en, name_jp, habitat_id, status)
+VALUES 
+    (9, 'Quokka', 'クオッカ', 4, '準絶滅危惧');</div>
+
+    <div class="warning mt-4">
+        <p><strong>注意点</strong>:</p>
+        <ul class="mb-0">
+            <li>SELECT文では、必要な列のみを指定する</li>
+            <li>WHERE句で検索条件を指定できる</li>
+            <li>ORDER BY句でソート順を指定できる</li>
+            <li>INSERT時は列名と値の数を合わせる</li>
+        </ul>
+    </div>
+</div>
+
+<!-- スライド8: WHERE句 -->
+<div class="slide">
+    <h1>🎯 WHERE句 - 条件指定</h1>
+    <h2>比較演算子を使った動物データの検索</h2>
+    <div class="code-block">-- 特定の保護状態の動物
+SELECT * FROM native_animals WHERE status = '危急種';
+
+-- 特定の生息地ID以上の動物
+SELECT 
+    name_en, name_jp, habitat_id 
+FROM 
+    native_animals 
+WHERE 
+    habitat_id >= 4;
+
+-- IDが5より小さい動物
+SELECT 
+    name_en, name_jp, animal_id 
+FROM 
+    native_animals 
+WHERE 
+    animal_id < 5;</div>
+    
+    <h2>論理演算子とパターンマッチング</h2>
+    <div class="code-block">-- 特定の生息地範囲の動物
+SELECT 
+    name_en, name_jp, habitat_id 
+FROM 
+    native_animals 
+WHERE 
+    habitat_id >= 2 AND habitat_id <= 5;
+
+-- 名前に「a」が含まれる動物
+SELECT 
+    name_en, name_jp 
+FROM 
+    native_animals 
+WHERE 
+    name_en LIKE '%a%';
+
+-- 英語名が「K」で始まる動物
+SELECT 
+    name_en, name_jp 
+FROM 
+    native_animals 
+WHERE 
+    name_en LIKE 'K%';</div>
+</div>
+
+<!-- スライド9: 集計関数 -->
+<div class="slide">
+    <h1>📊 集計関数 - データの要約</h1>
+    <h2>よく使われる集計関数</h2>
+    <div class="code-block">-- 全動物の数をカウント
+SELECT COUNT(*) as 動物の数 FROM native_animals;
+
+-- 生息地の数を計算
+SELECT COUNT(DISTINCT habitat_id) as 生息地の数 FROM native_animals;
+<!-- <div class="info"> -->
+    <strong>DISTINCT は、重複する値を排除して、ユニークな値だけをカウントするために使います。
+        つまり、同じ生息地IDが複数回出てきても、1回だけカウントされます。</strong>
+<!-- </div> -->
+
+-- 最大・最小動物ID
+SELECT 
+    MAX(animal_id) as 最大ID,
+    MIN(animal_id) as 最小ID
+FROM 
+    native_animals;
+
+-- 生息地ごとの動物数
+SELECT 
+    habitat_id, COUNT(*) as 動物数
+FROM 
+    native_animals
+GROUP BY 
+    habitat_id;</div>
+    
+    <h2>条件付き集計</h2>
+    <div class="code-block">-- 絶滅危惧種の数
+SELECT 
+    COUNT(*) as 絶滅危惧種の数 
+FROM 
+    native_animals 
+WHERE 
+    status = '絶滅危惧';
+
+-- 特定の生息地の動物数
+SELECT 
+    COUNT(*) as 森林動物の数
+FROM 
+    native_animals na
+JOIN 
+    habitats h 
+ON na.habitat_id = h.habitat_id
+WHERE 
+    h.name LIKE '%森%';</div>
+    
+    <div class="info">
+        <strong>集計関数の活用</strong><br>
+        • COUNT: レコード数のカウント<br>
+        • COUNT(DISTINCT): 重複を除いたカウント<br>
+        • MAX/MIN: 最大値・最小値<br>
+        • GROUP BY: グループ化して集計<br>
+    </div>
+</div>

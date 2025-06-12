@@ -1,0 +1,167 @@
+<!-- スライド10: INNER JOIN -->
+<div class="slide">
+    <h1>テーブルの結合（JOIN）</h1>
+
+    <div class="info mb-4">
+        <h3 class="text-white">JOINの基本</h3>
+        <p class="text-white mb-0">複数のテーブルを結合して動物データを取得する方法を学びましょう</p>
+    </div>
+
+    <h2>INNER JOIN</h2>
+    <div class="code-block">-- INNER JOIN（内部結合）の基本
+-- 両方のテーブルに存在するデータのみを取得します
+SELECT 
+    na.name_jp as 動物名,
+    h.name as 生息地,
+    h.climate as 気候
+FROM 
+    native_animals na
+INNER JOIN habitats h ON 
+    na.habitat_id = h.habitat_id;</div>
+
+    <h2>LEFT JOIN</h2>
+    <div class="code-block">-- LEFT JOIN（左外部結合）の使用例
+-- 生息地テーブルの全レコードを取得し、動物がいない生息地も表示します
+SELECT 
+    h.name as 生息地名, 
+    COALESCE(COUNT(na.animal_id), 0) as 生息動物数
+FROM 
+    habitats h
+LEFT JOIN native_animals na ON
+    h.habitat_id = na.habitat_id
+GROUP BY 
+    h.name;
+    <br>
+<strong>
+COUNT(na.animal_id) は、native_animals テーブルの動物IDをカウントします。
+生息地に関連する動物がいない場合、その生息地は NULL になる可能性がありますが、COALESCE 関数を使うことで NULL を 0 に置き換えています。
+結果的に、生息地ごとの動物の数が NULL の場合でも 0 として表示されます。</strong>
+</div>
+
+    <h2>多対多の関係を扱う</h2>
+    <div class="code-block">-- 多対多の関係を扱うJOIN
+-- 動物と食性の関係を中間テーブルを介して結合します
+SELECT na.name_jp AS 動物名, 
+       GROUP_CONCAT(dt.type SEPARATOR '、') AS 食性
+FROM 
+    native_animals na
+JOIN animal_diets ad ON 
+    na.animal_id = ad.animal_id
+JOIN diet_types dt ON 
+    ad.diet_id = dt.diet_id
+GROUP BY na.animal_id, na.name_jp
+LIMIT 25;</div>
+
+    <div class="success mt-4">
+        <p><strong>JOINの種類と使い分け</strong>:</p>
+        <ul class="mb-0">
+            <li><strong>INNER JOIN</strong>: 両方のテーブルに存在するデータのみ取得</li>
+            <li><strong>LEFT JOIN</strong>: 左テーブルの全データを取得（右テーブルのデータがなくてもNULLで表示）</li>
+            <li><strong>多対多の結合</strong>: 中間テーブルを介して2つのテーブルを結合</li>
+        </ul>
+    </div>
+</div>
+
+<!-- スライド11: JOINの実践例 -->
+<div class="slide">
+    <h1>💼 JOIN の実践的な活用例</h1>
+    <div class="code-block">-- 各生息地の動物数と保護状態の集計
+SELECT
+    h.name AS 生息地名,
+    COUNT(na.animal_id) AS 動物数,
+    h.climate AS 気候,
+    COUNT(
+        CASE WHEN na.status IN('絶滅危惧', '危急種') THEN 1
+    END
+) AS 要保護動物数
+FROM
+    habitats h
+LEFT JOIN native_animals na ON
+    h.habitat_id = na.habitat_id
+GROUP BY
+    h.habitat_id,
+    h.name,
+    h.climate
+ORDER BY
+    要保護動物数
+DESC;</div>
+
+    <div class="code-block">-- 複数の条件を組み合わせたJOIN
+-- 特定の気候帯に住む特定の食性の動物を検索します
+SELECT
+    na.name_jp AS 動物名,
+    h.name AS 生息地,
+    dt.type AS 食性
+FROM
+    native_animals na
+JOIN habitats h ON
+    na.habitat_id = h.habitat_id
+JOIN animal_diets ad ON
+    na.animal_id = ad.animal_id
+JOIN diet_types dt ON
+    ad.diet_id = dt.diet_id
+WHERE
+    h.climate = '温帯' AND dt.type = '草食性';</div>
+
+    <div class="info">
+        <strong>高度な技法の組み合わせ</strong><br>
+        • LEFT JOINで全ての生息地を含める<br>
+        • GROUP BYで生息地ごとに集計<br>
+        • CASE文で条件分岐による集計<br>
+        • 多段階JOINで複雑な関係を表現
+    </div>
+</div>
+
+<!-- スライド12: LEFT JOIN と RIGHT JOIN -->
+<div class="slide">
+    <h1>🔄 LEFT JOIN と RIGHT JOIN</h1>
+    <h2>異なる結合方法の比較</h2>
+    
+    <div class="code-block">-- LEFT JOIN: 全ての生息地を表示（動物がいない生息地も含む）
+SELECT
+    h.name,
+    na.name_en
+FROM
+    habitats h
+LEFT JOIN native_animals na ON
+    h.habitat_id = na.habitat_id
+ORDER BY
+    h.name;</div>
+    
+    <div class="code-block">-- INNER JOIN: 動物がいる生息地のみ表示
+SELECT
+    h.name,
+    na.name_en
+FROM
+    habitats h
+INNER JOIN native_animals na ON
+    h.habitat_id = na.habitat_id
+ORDER BY
+    h.name;</div>
+    
+    <div class="two-column">
+        <div>
+            <h3>LEFT JOINの結果</h3>
+            <ul>
+                <li>全ての生息地が表示される</li>
+                <li>動物がいない生息地はNULLで表示</li>
+                <li>データの欠損を確認できる</li>
+            </ul>
+        </div>
+        <div>
+            <h3>INNER JOINの結果</h3>
+            <ul>
+                <li>一致するデータのみ表示</li>
+                <li>動物がいない生息地は除外される</li>
+                <li>完全なデータのみ取得</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="success">
+        <strong>使い分けのポイント</strong><br>
+        • データの完全性を確認したい → LEFT JOIN<br>
+        • 完全なデータのみ処理したい → INNER JOIN<br>
+        • レポートや分析では用途に応じて選択
+    </div>
+</div>

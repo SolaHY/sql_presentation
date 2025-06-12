@@ -1,0 +1,199 @@
+<!-- スライド4: データベースの基本構造 -->
+<div class="slide">
+    <h1>📊 データベースの基本構造</h1>
+    <div class="two-column">
+        <div>
+            <h3>基本用語</h3>
+            <ul>
+                <li><strong>テーブル</strong>: データの表</li>
+                <li><strong>カラム</strong>: 列（項目）</li>
+                <li><strong>レコード</strong>: データ（行）</li>
+                <li><strong>主キー</strong>: 各行の識別子</li>
+                <li><strong>外部キー</strong>: 他テーブルとの関連</li>
+            </ul>
+        </div>
+        <div>
+            <h3>🦘 native_animalsテーブルの例</h3>
+            <table class="table-demo">
+                <tr>
+                    <th>animal_id</th>
+                    <th>name_en</th>
+                    <th>name_jp</th>
+                    <th>status</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Kangaroo</td>
+                    <td>カンガルー</td>
+                    <td>Least Concern</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Koala</td>
+                    <td>コアラ</td>
+                    <td>Vulnerable</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- スライド5: テーブル構造の設計 -->
+<div class="slide">
+    <h1>📝 今回使用するテーブル構造</h1>
+    <h2>CREATE文の基本構文</h2>
+    <div class="code-block">
+CREATE TABLE テーブル名 (
+    カラム名1 データ型1 [制約1] [COMMENT 'コメント1'],
+    カラム名2 データ型2 [制約2] [COMMENT 'コメント2'],
+    ...
+    [PRIMARY KEY (カラム名)],
+    [FOREIGN KEY (カラム名) REFERENCES 参照テーブル名(参照カラム名)]
+) [COMMENT = 'テーブルの説明'];
+
+-- 主な制約
+-- PRIMARY KEY: 主キー（重複不可、NULL不可）
+-- FOREIGN KEY: 外部キー（他のテーブルを参照）
+-- NOT NULL: NULL値を禁止
+-- UNIQUE: 重複を禁止
+-- DEFAULT: デフォルト値を設定
+    </div>
+    <h3>テーブルを作成</h3>
+    <div class="code-block">-- テーブル定義
+CREATE TABLE habitats (
+    habitat_id   INTEGER PRIMARY KEY COMMENT '固有の生息地ID',
+    name         VARCHAR(100) NOT NULL COMMENT '生息地の名前',
+    climate      VARCHAR(50) COMMENT '生息地の気候（例：熱帯、乾燥など）',
+    description  TEXT COMMENT '生息地の詳細説明'
+) COMMENT = '生息地テーブル';
+</div>
+</div>
+
+<!-- スライド6: データの挿入 -->
+<div class="slide">
+    <h1>📝 データの挿入</h1>
+    
+    <div class="two-column">
+        <div>
+            <h2>INSERT文の基本構文</h2>
+            <div class="code-block">
+INSERT INTO テーブル名 
+    [(カラム名1, カラム名2, ...)]
+VALUES 
+    (値1, 値2, ...);</div>
+            
+            <div class="info mt-4">
+                <h3>主な使い方</h3>
+                <ul>
+                    <li>全カラムを指定する場合はカラム名の指定を省略可能</li>
+                    <li>複数レコードを一度に挿入する場合はVALUESを複数指定</li>
+                    <li>NOT NULLのカラムは必ず値を指定する必要あり</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div>
+            <h2>使用例</h2>
+            <div class="code-block">
+-- 例1：全カラムを指定
+INSERT INTO habitats 
+VALUES
+    (1, 'グレートバリアリーフ', '熱帯', '世界最大のサンゴ礁');
+
+-- 例2：特定のカラムのみ指定
+INSERT INTO habitats 
+    (name, climate)
+VALUES 
+    ('アウトバック砂漠', '乾燥');
+
+-- 例3：複数レコードの一括挿入
+INSERT INTO habitats 
+    (habitat_id, name)
+VALUES 
+    (3, '温帯雨林'),
+    (4, 'ユーカリの森'),
+    (5, '湿地帯');</div>
+        </div>
+    </div>
+
+
+
+    <div class="code-block">-- サンプルデータ
+    INSERT INTO habitats VALUES
+        (1, 'グレートバリアリーフ', '熱帯', 'オーストラリア北東沖に位置する世界最大のサンゴ礁生態系'),
+        (2, 'アウトバック砂漠', '乾燥', 'オーストラリア中央部の広大な砂漠地帯'),
+        (3, '温帯雨林', '温帯', 'タスマニアの涼しく湿潤な森林地帯'),
+        (4, 'ユーカリの森', '温帯', 'オーストラリア全土に広がる特徴的な森林'),
+        (5, '湿地帯', '亜熱帯', '沿岸部や内陸部の湿地生態系'),
+        (6, '高山地帯', '高山性', '標高の高い山岳地帯'),
+        (7, '沿岸水域', '海洋性', 'オーストラリアの沿岸海洋環境'),
+        (8, '都市部', '複合', '動物が適応している都市や町の環境');
+    </div>
+</div>
+
+<!-- スライド7: 関連テーブルの作成 -->
+<div class="slide">
+    <h1>🔗 関連テーブル準備（JOIN練習用）</h1>
+    <h2>native_animals（オーストラリア固有動物情報）</h2>
+    <div class="code-block">-- テーブル定義
+CREATE TABLE native_animals (
+    animal_id    INTEGER PRIMARY KEY COMMENT '固有の動物ID',
+    name_en      VARCHAR(100) NOT NULL COMMENT '動物の英語名',
+    name_jp      VARCHAR(100) COMMENT '動物の日本語名',
+    habitat_id   INTEGER COMMENT '生息地ID（habitatsテーブルの参照）',
+    status       VARCHAR(50) COMMENT '動物の状態（例：絶滅危惧種など）',
+    description  TEXT COMMENT '動物の詳細説明',
+    FOREIGN KEY (habitat_id) REFERENCES habitats(habitat_id)
+) COMMENT = '動物テーブル';
+        
+-- サンプルデータ
+INSERT INTO native_animals VALUES
+(1, 'Kangaroo', 'カンガルー', 2, '低危険度', 'オーストラリアを代表する有袋類。後ろ足でホッピングする特徴を持つ'),
+(2, 'Koala', 'コアラ', 4, '危急種', 'ユーカリの葉を主食とする木登り有袋類'),
+(3, 'Platypus', 'カモノハシ', 5, '準絶滅危惧', '卵を産む珍しい哺乳類で、川や池に生息'),
+(4, 'Wombat', 'ウォンバット', 4, '低危険度', '地中に巣を作る有袋類。立方体の糞をすることで知られる'),
+(5, 'Tasmanian Devil', 'タスマニアデビル', 3, '絶滅危惧', 'タスマニア固有の肉食性有袋類'),
+(6, 'Echidna', 'ハリモグラ', 4, '低危険度', 'アリやシロアリを食べる針のある単孔類'),
+(7, 'Great White Shark', 'ホオジロザメ', 7, '危急種', 'オーストラリアの海域に生息する大型の捕食者'),
+(8, 'Saltwater Crocodile', 'イリエワニ', 5, '低危険度', '世界最大の爬虫類で、北部の水域に生息');</div>
+
+    <h2>diet_types（食性情報）と中間テーブル</h2>
+    <div class="code-block">-- 食性タイプテーブル
+CREATE TABLE diet_types (
+    diet_id      INTEGER PRIMARY KEY,
+    type         VARCHAR(50) NOT NULL,
+    description  TEXT
+);
+
+INSERT INTO diet_types VALUES
+(1, '草食性', '植物を主食とする動物'),
+(2, '肉食性', '他の動物を捕食する動物'),
+(3, '雑食性', '植物と動物の両方を食べる動物'),
+(4, '昆虫食性', '昆虫を主食とする動物');
+
+-- 動物と食性の多対多関係
+CREATE TABLE animal_diets (
+    animal_id    INTEGER COMMENT '動物ID（native_animalsテーブルのanimal_idを参照）',
+    diet_id      INTEGER COMMENT '食物ID（diet_typesテーブルのdiet_idを参照）',
+    PRIMARY KEY (animal_id, diet_id) COMMENT '動物IDと食物IDの組み合わせが主キー',
+    FOREIGN KEY (animal_id) REFERENCES native_animals(animal_id),
+    FOREIGN KEY (diet_id) REFERENCES diet_types(diet_id)
+) COMMENT = '動物食性テーブル';
+
+INSERT INTO animal_diets VALUES
+(1, 1), -- カンガルー：草食性
+(1, 2), -- カンガルー：肉食性
+(2, 1), -- コアラ：草食性
+(3, 2), -- カモノハシ：肉食性
+(4, 1), -- ウォンバット：草食性
+(5, 2), -- タスマニアデビル：肉食性
+(6, 4), -- ハリモグラ：昆虫食性
+(7, 2), -- ホオジロザメ：肉食性
+(8, 2); -- イリエワニ：肉食性
+
+
+</div>
+</div>
+
+
+</div>
