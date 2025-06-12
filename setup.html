@@ -251,6 +251,138 @@
             font-size: 2em;
             margin-right: 10px;
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .presentation-container {
+                border-radius: 10px;
+            }
+
+            .slide {
+                padding: 20px;
+                min-height: auto;
+            }
+
+            .slide h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+
+            .slide h2 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .slide h3 {
+                font-size: 1.2em;
+            }
+
+            .slide p, .slide li {
+                font-size: 1em;
+                line-height: 1.4;
+            }
+
+            .code-block {
+                padding: 15px;
+                font-size: 0.9em;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .navigation {
+                bottom: 15px;
+                right: 15px;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+
+            .slide-counter {
+                top: 10px;
+                right: 10px;
+                padding: 5px 10px;
+                font-size: 0.9em;
+            }
+
+            .title-slide h1 {
+                font-size: 2em;
+            }
+
+            .title-slide p {
+                font-size: 1.2em;
+            }
+
+            .os-badge {
+                padding: 5px 10px;
+                font-size: 0.9em;
+                margin: 5px;
+            }
+
+            .feature-card {
+                padding: 15px;
+            }
+
+            .emoji {
+                font-size: 1.5em;
+            }
+
+            .step-number {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                font-size: 1em;
+            }
+        }
+
+        /* 小さいスマートフォン向け */
+        @media (max-width: 480px) {
+            .slide h1 {
+                font-size: 1.5em;
+            }
+
+            .slide h2 {
+                font-size: 1.3em;
+            }
+
+            .slide p, .slide li {
+                font-size: 0.9em;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+
+            .navigation {
+                width: 100%;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                padding: 10px;
+                background: rgba(255, 255, 255, 0.9);
+                justify-content: space-around;
+            }
+
+            .nav-btn {
+                padding: 8px 12px;
+            }
+        }
     </style>
 </head>
 <body>
