@@ -7,31 +7,34 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    overflow: hidden;
-    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
 .presentation-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    max-width: 1200px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
 }
 
 .slide {
     display: none;
     padding: 40px;
-    height: calc(100vh - 100px);
+    min-height: 600px;
     background: white;
-    margin: 20px;
-    border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    overflow-y: auto;
     position: relative;
+    animation: slideIn 0.5s ease-out;
 }
 
 .slide.active {
     display: block;
-    animation: slideIn 0.5s ease-out;
 }
 
 @keyframes slideIn {
@@ -199,10 +202,10 @@ body {
 }
 
 .slide-counter {
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 30px;
-    background: #34495e;
+    background: rgba(52, 73, 94, 0.8);
     color: white;
     padding: 8px 15px;
     border-radius: 20px;
@@ -227,4 +230,134 @@ body {
 .goals h3 {
     color: white;
     margin-bottom: 15px;
+}
+
+/* タブレット向けスタイル */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .presentation-container {
+        border-radius: 10px;
+    }
+
+    .slide {
+        padding: 20px;
+        min-height: auto;
+    }
+
+    .slide h1 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+
+    .slide h2 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+
+    .slide h3 {
+        font-size: 1.2em;
+    }
+
+    .slide p, .slide li {
+        font-size: 1em;
+        line-height: 1.4;
+    }
+
+    .code-block {
+        padding: 15px;
+        font-size: 0.9em;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .two-column {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .table-demo th, .table-demo td {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    .navigation {
+        bottom: 15px;
+        gap: 10px;
+    }
+
+    .nav-btn {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
+    .slide-counter {
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        font-size: 0.8em;
+    }
+}
+
+/* スマートフォン向けスタイル */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+
+    .slide {
+        padding: 15px;
+    }
+
+    .slide h1 {
+        font-size: 1.5em;
+    }
+
+    .slide h2 {
+        font-size: 1.3em;
+        padding-left: 10px;
+    }
+
+    .slide h3 {
+        font-size: 1.1em;
+    }
+
+    .slide p, .slide li {
+        font-size: 0.9em;
+    }
+
+    .code-block {
+        padding: 10px;
+        font-size: 0.8em;
+        margin: 10px 0;
+    }
+
+    .table-demo th, .table-demo td {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+
+    .navigation {
+        width: 100%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        justify-content: space-around;
+    }
+
+    .nav-btn {
+        padding: 8px 15px;
+        font-size: 0.8em;
+    }
+
+    .warning, .info, .success {
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 0.9em;
+    }
 } 
